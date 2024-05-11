@@ -27,9 +27,28 @@ const postContact = asyncHandler(async (req, res)=>{
     res.send(contact);
 });
 const putContact = asyncHandler(async (req, res)=>{
-    res.send(`update contact for ${req.params.id}`);
+    const contact = await Contact.findById(req.params.id);
+    if (!contact){
+        res.status(404);
+        throw new Error("Contact not found");
+    }
+
+    const updatedContact = contact.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        {new:true}
+    );
+    res.send(updatedContact);
 });
 const deleteContact = asyncHandler(async (req, res)=>{
-    res.send(`Deleted contact with id ${req.params.id}`);
+    const contact = await Contact.findById(req.params.id);
+    if (!contact){
+        res.status(404);
+        throw new Error("Contact not found");
+    }
+
+    await Contact.remove(contact);
+    res.send(contact);
 });
 module.exports = {getContact, getOneContact,postContact,putContact,deleteContact};
+
